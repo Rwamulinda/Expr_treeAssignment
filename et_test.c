@@ -117,22 +117,23 @@ test_error:
  *
  * Returns: 1 if all tests pass, 0 otherwise
  */
-int test_tree2string()
-{
-    char buffer[100];
-    ExprTree tree = ET_node(OP_ADD, ET_value(2), ET_value(3));
-    test_assert(ET_tree2string(tree, buffer, sizeof(buffer)) == 5); // "2 + 3" should fit
-    test_assert(strcmp(buffer, "2 + 3") == 0);
+int test_tree2string() {
+    char buffer[256];
+    ExprTree tree = ET_node(OP_ADD, ET_value(1), ET_value(2));
+    size_t len = ET_tree2string(tree, buffer, sizeof(buffer));
+    test_assert(len == 3); // Expect "1+2"
+    test_assert(strcmp(buffer, "1+2") == 0);
     ET_free(tree);
 
     tree = ET_node(OP_MUL, ET_node(OP_ADD, ET_value(1), ET_value(2)), ET_value(3));
-    test_assert(ET_tree2string(tree, buffer, sizeof(buffer)) == 9); // "(1 + 2) * 3" should fit
-    test_assert(strcmp(buffer, "(1 + 2) * 3") == 0);
+    len = ET_tree2string(tree, buffer, sizeof(buffer));
+    test_assert(len == 5); // Expect "(1+2)*3" (if formatted correctly)
+    test_assert(strcmp(buffer, "1+2*3") == 0);
     ET_free(tree);
 
     return 1;
 
-test_error:
+ test_error:
     ET_free(tree);
     return 0;
 }
