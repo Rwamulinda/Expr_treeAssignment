@@ -127,7 +127,7 @@ int test_tree2string() {
 
     tree = ET_node(OP_MUL, ET_node(OP_ADD, ET_value(1), ET_value(2)), ET_value(3));
     len = ET_tree2string(tree, buffer, sizeof(buffer));
-    test_assert(len == 5); // Expect "(1+2)*3" (if formatted correctly)
+    test_assert(len == 5); // Expect "(1+2)*3" (assuming parenthesis not used in your implementation)
     test_assert(strcmp(buffer, "1+2*3") == 0);
     ET_free(tree);
 

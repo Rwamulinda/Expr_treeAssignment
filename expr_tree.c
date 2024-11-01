@@ -137,16 +137,14 @@ size_t ET_tree2string(ExprTree tree, char *buf, size_t buf_sz) {
     if (buf_sz == 0) return 0;
 
     if (tree->type == VALUE) {
-        return snprintf(buf, buf_sz, "%.2f", tree->n.value);
+        // Use %g to automatically format without unnecessary decimal points for whole numbers
+        return snprintf(buf, buf_sz, "%g", tree->n.value);
     }
 
     char op = ExprNodeType_to_char(tree->type);
     
     size_t left_len = ET_tree2string(tree->n.child[LEFT], buf, buf_sz);
-    if (left_len >= buf_sz) {
-        printf("Left string is too long: %zu >= %zu\n", left_len, buf_sz);
-        return left_len; // Ensure we have enough space for the operator
-    }
+    if (left_len >= buf_sz - 1) return left_len;
 
     buf[left_len] = op; // Add the operator
     buf[left_len + 1] = '\0'; // Null terminate after operator
@@ -155,11 +153,8 @@ size_t ET_tree2string(ExprTree tree, char *buf, size_t buf_sz) {
     if (right_len + left_len + 1 >= buf_sz) {
         buf[buf_sz - 1] = '$'; // Indicate truncation with '$'
         buf[buf_sz - 2] = '\0'; // Ensure the buffer is null-terminated
-        printf("Buffer truncated! Final buffer: %s\n", buf);
         return buf_sz - 1; // Return size indicating truncation
     }
 
-    size_t total_length = left_len + 1 + right_len;
-    printf("Final string: %s, length: %zu\n", buf, total_length);
-    return total_length; // Return total length of the string
+    return left_len + 1 + right_len; // Return total length of the string
 }
