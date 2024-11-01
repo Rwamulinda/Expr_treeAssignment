@@ -141,12 +141,20 @@ size_t ET_tree2string(ExprTree tree, char *buf, size_t buf_sz) {
     }
 
     char op = ExprNodeType_to_char(tree->type);
+    
     size_t left_len = ET_tree2string(tree->n.child[LEFT], buf, buf_sz);
-    if (left_len >= buf_sz - 1) return left_len;
+    if (left_len >= buf_sz) return left_len; // Ensure we have enough space for the operator
 
-    buf[left_len] = op;
+    buf[left_len] = op; // Add the operator
+    buf[left_len + 1] = '\0'; // Null terminate after operator
     size_t right_len = ET_tree2string(tree->n.child[RIGHT], buf + left_len + 1, buf_sz - left_len - 1);
 
-    return left_len + 1 + right_len;
-}
+    // If the right tree is truncated, we need to ensure that we terminate correctly
+    if (right_len + left_len + 1 >= buf_sz) {
+        buf[buf_sz - 1] = '$'; // Indicate truncation with '$'
+        buf[buf_sz - 2] = '\0'; // Ensure the buffer is null-terminated
+        return buf_sz - 1; // Return size indicating truncation
+    }
 
+    return left_len + 1 + right_len; // Return total length of the string
+}
