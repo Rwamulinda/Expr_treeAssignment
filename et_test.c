@@ -148,6 +148,28 @@ int test_depth_single_node() {
     return 0;
 }
 
+int test_depth_unbalanced_tree() {
+    ExprTree tree = ET_node(OP_ADD, ET_value(1), ET_node(OP_ADD, ET_value(2), ET_node(OP_ADD, ET_value(3), ET_value(4))));
+    test_assert(ET_depth(tree) == 4); // Depth of unbalanced tree
+    ET_free(tree);
+    return 1;
+
+ test_error:
+    ET_free(tree);
+    return 0;
+}
+
+int test_count_leaf_node() {
+    ExprTree tree = ET_value(5);
+    test_assert(ET_count(tree) == 1);
+    ET_free(tree);
+    return 1;
+
+ test_error:
+    ET_free(tree);
+    return 0;
+}
+
   //
   // TODO: Add your code here
   //
@@ -163,6 +185,8 @@ int main()
   num_tests++; passed += test_evaluate();
   num_tests++; passed += test_tree2string();
   num_tests++; passed += test_depth_single_node();
+  num_tests++; passed += test_depth_unbalanced_tree();
+  num_tests++; passed += test_count_leaf_node();
 
 
   //
